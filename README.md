@@ -9,10 +9,9 @@
 </a>
 </p>
 <p align="center">
-<a href="https://github.com/Hassi34/whatsapp-ai-chatbot">
-    <img src="https://readme-typing-svg.demolab.com?font=Georgia&size=18&duration=2000&pause=1500&multiline=False&color=10D736FF&center=true&width=600&height=40&lines=AI+%7C+NLP+%7C+LangChain+%7C+OpenAI+%7C+ChatGPT;Python+%7C+3.8+%7C+3.9+%7C+3.10+%7C+3.11;Online Serving+%7CCICD pipeline+%7CREST API+%7C+Flask+%7C+Docker+%7C+Twilio;Ngrok+%7C+EC2 Instance+%7C+Self Hosted Runner;" alt="Typing SVG" />
-</a>
+  <img src="./repo_assets/whatsapp-ai-chatbot.gif" alt="animated" />
 </p>
+
 
 <p align="center">
     <a href="https://www.python.org/downloads/">
