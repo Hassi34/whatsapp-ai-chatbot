@@ -95,7 +95,7 @@ WhatsApp Chatbot with OpenAI Integration is a sophisticated messaging bot that c
 7. AWS-EC2 as a Self hosted runner
 </pre>
 ## CICD on Circleci
-![image](./assets/cicd.jpg)
+![image](./repo_assets/cicd.png)
 
 ## Run Locally<a id='run-locally'></a>
 Either you can clone the repo and run the project using source or you can directly run a docker container
