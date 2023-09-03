@@ -56,7 +56,7 @@ Following are the main contents to follow, you can jump to any section:
 >   -  [Conclusion](#conclusion-)<br>
 
 ### Introduction<a id='project-intro'></a>  
-WhatsApp Chatbot with OpenAI Integration is a sophisticated messaging bot that can be deployed to interact with users on WhatsApp. Leveraging the Twilio API for WhatsApp messaging and the LangChain by OpenAI for natural language processing, this bot can understand and respond to user queries in a conversational manner. It goes beyond basic chatbots by utilizing custom tools to access the internet, ensuring that it can provide up-to-date information and perform a wide range of tasks.
+WhatsApp Chatbot with OpenAI Integration is a sophisticated messaging bot that can be deployed to interact with users on WhatsApp. Leveraging the Twilio API for WhatsApp messaging and the ChatGPT by OpenAI for natural language processing, this bot can understand and respond to user queries in a conversational manner. It goes beyond basic chatbots by utilizing custom tools to access the internet, ensuring that it can provide up-to-date information and perform a wide range of tasks.
 ## System Design<a id='system-design'></a>  
 ![image](./repo_assets/SystemDesign.png)
 ## Key Features<a id='key-features'></a> 
