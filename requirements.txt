@@ -1,0 +1,10 @@
+flask
+twilio>=8.5.0
+python-dotenv>=1.0.0
+PyYAML>=6.0.1
+openai>=0.27.8
+langchain>=0.0.247
+google-search-results
+boto3
+flask_cors
+-e .

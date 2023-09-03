@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    container_name: hassi-bot-container
+    command: python src/app.py
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/hassi-bot-container-volume

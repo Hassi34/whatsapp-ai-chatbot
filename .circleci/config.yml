@@ -1,0 +1,165 @@
+version: 2.1
+
+executors:
+  docker-publisher:
+    environment:
+      IMAGE_NAME_DOCKER_HUB: hassi34/whatsapp-ai-chatbot:latest
+    docker:
+      - image: docker:24.0.5-git
+    resource_class: large
+
+
+jobs:
+  continuous-integration:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium
+    steps:
+      - checkout
+      - run:
+          name: install-dependencies
+          command: |
+            sudo apt-get update
+            sudo apt update
+            sudo apt install software-properties-common
+            sudo add-apt-repository ppa:deadsnakes/ppa -y
+            sudo apt-get install python3.11 -y
+            sudo apt install python3-pip -y
+            pip3 install flake8
+      - run:
+          name: lint-with-flake8
+          command: |
+            # stop the build if there are Python syntax errors or undefined names
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+            # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+            flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  continuous-build:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk update
+            # apk add --update py-pip
+            # pip3 install httplib2 docker-compose==1.12.0
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - image.tar
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i image.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=image -t $IMAGE_NAME_DOCKER_HUB .
+      - run:
+          name: Post build tests
+          command: |
+            docker run -itd -e OPENAI_API_KEY=$OPENAI_API_KEY -e SERPAPI_API_KEY=$SERPAPI_API_KEY -e OPENWEATHER_API_KEY=$OPENWEATHER_API_KEY -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION --name mybot -p 8080:8080 $IMAGE_NAME_DOCKER_HUB
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            docker save -o image.tar $IMAGE_NAME_DOCKER_HUB
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - image.tar
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+
+
+  continuous-delivery:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run:
+          name: Load archived Docker image
+          command: docker load -i /tmp/workspace/image.tar
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_ACCESS_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push $IMAGE_NAME_DOCKER_HUB
+      - run:
+          name: Send the sanity check alert message
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "main" ]; then
+            apk update
+            apk add --update py-pip
+            pip3 install load_dotenv pytz
+            cd alerts && python3 send_sanity_check_alert.py
+            fi
+
+  continuous-deployment:
+    machine: true
+    resource_class: hassi34/ec2-for-bot
+    steps:
+      - checkout
+      - run:
+          name: Run Docker Image in Prod Env
+          command: |
+            echo "Hi, I'm on Runner..."
+            docker kill $(docker ps -q) || true
+            docker image prune -a -f
+            docker run -dit --env-file="$ENV_FILE_PATH_RUNNER" -p 8080:8080 hassi34/whatsapp-ai-chatbot:latest
+      - run:
+          name : Reomving unused containers
+          command : docker system prune --force
+      - run:
+          name: Remove the unreferenced and dangling images
+          command: docker image prune -a -f
+      - run:
+          name: Send Production Deployment Success Alert
+          command: cd alerts && python3 send_prod_deployment_alert.py
+
+workflows:
+  CICD:
+    jobs:
+      - continuous-integration
+
+      - continuous-build:
+          requires:
+            - continuous-integration
+          filters:
+            branches:
+              ignore:
+                - dev
+
+      - continuous-delivery:
+          requires:
+            - continuous-integration
+            - continuous-build
+          filters:
+            branches:
+              ignore:
+                - dev
+
+      - sanity-check:
+          type: approval
+          requires:
+          - continuous-delivery
+          filters:
+            branches:
+              only:
+                - main
+
+      - continuous-deployment:
+          requires:
+            - continuous-delivery
+            - sanity-check
+          filters:
+            branches:
+              only:
+                - main
