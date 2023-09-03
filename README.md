@@ -19,7 +19,7 @@
         <img alt="License" src="https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-g.svg">
     </a>
     <a href="https://github.com/Hassi34/whatsapp-ai-chatbot">
-        <img alt="Build" src="https://circleci.com/gh/Hassi34/whatsapp-ai-chatbot.svg?style=svg&circle-token=4a7b1b0ecef476886311269a35c17f05ec51ac60">
+        <img alt="Build" src="https://circleci.com/gh/Hassi34/whatsapp-ai-chatbot.svg?style=svg&circle-token=9373a7eeb514b8dc34b90445c9426e0091cc27ba">
     </a>
     <a href="https://github.com/Hassi34/whatsapp-ai-chatbot">
         <img alt="Last Commit" src="https://img.shields.io/github/last-commit/hassi34/whatsapp-ai-chatbot/main?color=g">
