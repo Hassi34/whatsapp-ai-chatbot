@@ -110,7 +110,7 @@ jobs:
       - run:
           name: Run Docker Image in Prod Env
           command: |
-            echo "Hi, I'm on Runner..."
+            echo "Hey, I'm on Runner..."
             docker kill $(docker ps -q) || true
             docker image prune -a -f
             docker run -dit --env-file="$ENV_FILE_PATH_RUNNER" -p 8080:8080 hassi34/whatsapp-ai-chatbot:latest
